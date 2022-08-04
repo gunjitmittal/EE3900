@@ -144,8 +144,7 @@ sudo pip install cffi pysoundfile
 \label{prob:input}
 Download the sound file from  
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/ 
-EE1310/master/filter/codes/Sound_Noise.wav
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/Sound_Noise.wav
 \end{lstlisting}
 %\href{http://tlc.iith.ac.in/img/sound/Sound_Noise.wav}{\url{http://tlc.iith.ac.in/img/sound/Sound_Noise.wav}}  
 %in the link given below.
@@ -169,13 +168,6 @@ Write the python code for removal of out of band noise and execute the code.
 \\
 \solution
 \lstinputlisting{./codes/noise_rm.py}
-%\begin{figure}[h]
-%\centering
-%\includegraphics[width=\columnwidth]{enc_block_diag.png}
-%\caption{}
-%\label{fig:convolution encoder}
-%\end{figure}
-%\input{block_enc}
 \item
 The output of the python script in Problem \ref{prob:output} is the audio file Sound\_With\_ReducedNoise.wav. Play the file in the spectrogram in Problem \ref{prob:spectrogram}. What do you observe?
 \\
@@ -199,7 +191,7 @@ Sketch $y(n)$.
 \\
 \solution The following code yields Fig. \ref{fig:xnyn}.
 \begin{lstlisting}
-wget https://github.com/gadepall/EE1310/raw/master/filter/codes/xnyn.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/xnyn.py
 \end{lstlisting}
 \begin{figure}[!ht]
 \begin{center}
@@ -330,8 +322,9 @@ known as the {\em Discret Time Fourier Transform} (DTFT) of $x(n)$.
 \\
 \solution The following code plots Fig. \ref{fig:dtft}.
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/dtft.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/dtft.py
 \end{lstlisting}
+The plot achieves it's global maxima at $\pm(2n+1)\pi$ and global minima at $\pm 2n\pi$
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\columnwidth]{./figs/dtft}
@@ -362,7 +355,7 @@ using \eqref{eq:anun} and \eqref{eq:z_trans_shift}.
 \\
 \solution The following code plots Fig. \ref{fig:hn}.
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/hn.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/hn.py
 \end{lstlisting}
 \begin{figure}[!ht]
 \centering
@@ -390,7 +383,7 @@ This is the definition of $h(n)$.
 \ref{fig:hn}. 
 %
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/hndef.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/hndef.py
 \end{lstlisting}
 \begin{figure}[!ht]
 \centering
@@ -415,7 +408,7 @@ $y(n)$ in  Fig.
 \ref{fig:xnyn}. 
 %
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/ynconv.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/ynconv.py
 \end{lstlisting}
 \begin{figure}[!ht]
 \centering
@@ -459,7 +452,7 @@ and $H(k)$ using $h(n)$.\\
   The following code plots Fig. \ref{fig:X-H(n)}.
 %
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/yndft.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_1.py
 \end{lstlisting}
 \item Compute 
 \begin{equation}
@@ -476,7 +469,7 @@ Y(k) = X(k)H(k)
   The following code plots Fig. \ref{fig:Y(n)}.
 %
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/yndft.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_2.py
 \end{lstlisting}
 \item Compute
 \begin{equation}
@@ -489,7 +482,7 @@ wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/yndft
  \ref{fig:xnyn}. 
  %
  \begin{lstlisting}
- wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/yndft.py
+ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/yndft.py
  \end{lstlisting}
  \begin{figure}[!ht]
  \centering
@@ -509,7 +502,7 @@ wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/yndft
   The following code plots Fig. \ref{fig:y(n)_FFT}.
 %
 \begin{lstlisting}
-wget https://raw.githubusercontent.com/gadepall/EE1310/master/filter/codes/yndft.py
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_4.py
 \end{lstlisting}
  \item Wherever possible, express all the above equations as matrix equations.\\
  \solution
