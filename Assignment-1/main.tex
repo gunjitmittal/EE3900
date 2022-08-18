@@ -176,6 +176,7 @@ The output of the python script in Problem \ref{prob:output} is the audio file S
 \section{Difference Equation}
 \begin{enumerate}[label=\thesection.\arabic*,ref=\thesection.\theenumi]
 \item Let
+\label{def:xn}
 \begin{equation}
 x(n) = \cbrak{\underset{\uparrow}{1},2,3,4,2,1}
 \end{equation}
@@ -200,6 +201,20 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/xnyn.py
 \caption{figure}{}
 \label{fig:xnyn}	
 \end{figure}
+\item Repeat the above exercise using a C code.
+\solution
+Download and run the C code for generating y and Python code for plotting y
+\begin{lstlisting}
+  wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/xnyn.c
+  wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/xnyn(1).py
+  \end{lstlisting}
+  \begin{figure}[!ht]
+    \begin{center}
+    \includegraphics[width=\columnwidth]{./figs/xnyn(1)}
+    \end{center}
+    \caption{figure}{}
+    \label{fig:xnyn(1)}	
+    \end{figure}
 \end{enumerate}
 \section{$Z$-transform}
 \begin{enumerate}[label=\thesection.\arabic*]
@@ -235,6 +250,13 @@ resulting in \eqref{eq:shift1}. Similarly, it can be shown that
   &=z^{-k}\sum _{n=-\infty }^{\infty }x(n)z^{-n}
   \label{eq:z_trans_shift}
   \end{align}
+\item Obtain $X(z)$ for $x(n)$ defined in problem 
+	\ref{def:xn}.
+\solution \\
+\begin{align}
+  X(z)&=\sum _{n=0}^{5}x(n)z^{-n}\\
+  &= 1 + 2z^{-1} + 3z^{-2} + 4z^{-3} + 2z^{-4} + 1z^{-5}
+\end{align}
 \item Find
 %
 \begin{equation}
@@ -318,22 +340,82 @@ Let
 H\brak{e^{\j \omega}} = H\brak{z = e^{\j \omega}}.
 \end{equation}
 Plot $\abs{H\brak{e^{\j \omega}}}$.  Comment.  $H(e^{\j \omega})$ is
-known as the {\em Discret Time Fourier Transform} (DTFT) of $x(n)$.
+known as the {\em Discret Time Fourier Transform} (DTFT) of $h(n)$.
 \\
-\solution The following code plots Fig. \ref{fig:dtft}.
+\solution
+\begin{align}
+  H\brak{e^{\j \omega}} &= \frac{1 + e^{-2\j\omega}}{1 + \frac12 e^{-\j\omega}} \\
+  \implies \abs{H\brak{e^{\j \omega}}} &= \frac{\abs{1 + \cos2\omega - \j\sin2\omega}}{\abs{1 + \frac12 \cos\omega - \frac12 \sin\omega}} \\
+  &= \sqrt{\frac{(1 + \cos2\omega)^2 + (\sin2\omega)^2}{(1 + \frac12 \cos\omega)^2 + (\frac12 \sin\omega)^2}} \\
+  &= \sqrt{\frac{2 + 2\cos2\omega}{\frac54 + \cos\omega}} \\
+  &= \sqrt{\frac{2(2\cos^2\omega)4}{5 + 4\cos\omega} } \\
+  &= \frac{4\abs{\cos\omega}}{\sqrt{5 + 4\cos\omega}}
+\end{align}
+ The following code plots Fig. \ref{fig:dtft}.
 \begin{lstlisting}
 wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/dtft.py
 \end{lstlisting}
-The plot achieves it's global maxima at $\pm(2n+1)\pi$ and global minima at $\pm 2n\pi$
+The plot is even and has a period of $2\pi $.
+% The plot achieves it's global maxima at $\pm(2n+1)\pi$ and global minima at $\pm 2n\pi$
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=\columnwidth]{./figs/dtft}
-\caption{$\abs{H\brak{e^{\j\omega}}}$}
+\caption{$\abs{H\brak{e^{j\omega}}}$}
 \label{fig:dtft}
 \end{figure}
+\item Express $h(n)$ in terms of $H\brak{e^{j \omega}}$.\\
+\solution Since $H\brak{e^{j \omega}}$ is the DTFT of $h(n)$
+\begin{align}
+  &\int_{-\pi}^{\pi} H\brak{e^{j\omega}} e^{jn\omega} d\omega\\
+  &=\int_{-\pi}^{\pi} \brak{\sum_{k=-\infty}^{\infty} h(k) e^{-jk\omega}} e^{jn\omega} d\omega\\
+  &=\sum_{k=-\infty}^{\infty} h(k) \int_{-\pi}^{\pi}  e^{j(n-k)\omega} d\omega\\
+  &=2\pi \sum_{k=-\infty}^{\infty} h(k) \delta(n-k)\\
+  &=2\pi h(n)
+\end{align}
+\begin{equation}
+  \therefore h(n) = \frac{1}{2\pi} \int_{-\pi}^{\pi} H\brak{e^{j\omega}} e^{jn\omega} d\omega
+\end{equation}
 \end{enumerate}
 \section{Impulse Response}
 \begin{enumerate}[label=\thesection.\arabic*]
+  \item Using long division, find
+	\begin{align}
+		h(n), \quad n < 5
+	\end{align}
+	for $H(z)$ in \eqref{eq:freq_resp}
+	
+	\solution 
+  \begin{equation}
+		H(z) = \frac{1 + z^{-2}}{1 + \frac12 z^{-1}}
+	\end{equation}
+	Substitute $z^{-1} = x$
+	
+	\polylongdiv{1+x^2}{1+\frac12 x}
+	
+	\begin{align}
+		&\implies 1 + z^{-2} = \brak{1 + \frac12 z^{-1}}\brak{-4 + 2z^{-1}} + 5 \\
+		&\implies H(z) = -4 + 2z^{-1} + \frac{5}{1 + \frac12 z^{-1}}
+	\end{align}
+	
+	On applying the inverse $Z$-transform on both sides of the equation
+	\begin{align}
+		H(z) &\ztrans h(n) \\
+		-4 &\ztrans -4\delta(n) \\
+		2z^{-1} &\ztrans 2\delta(n - 1) \\
+		\frac{5}{1 + \frac12 z^{-1}} &\ztrans 5\brak{-\frac12}^n u(n) \\
+	\end{align}
+	
+	Therefore,
+	\begin{equation}
+		h(n) = -4\delta(n) + 2\delta(n - 1) + 5\brak{-\frac12}^n u(n)
+	\end{equation}
+  \begin{align}
+    &h(0) = -4 + 5 = 1\\
+    &h(1) = 2 - 2.5 = -0.5\\
+    &h(2) = 1.25\\
+    &h(3) = -0.625\\
+    &h(4) = 0.3125
+  \end{align}
 \item \label{prob:impulse_resp}
 Find an expression for $h(n)$ using $H(z)$, given that 
 %in Problem \ref{eq:ztransab} and \eqref{eq:anun}, given that
@@ -351,7 +433,7 @@ H(z) &= \frac{1}{1 + \frac{1}{2}z^{-1}} + \frac{ z^{-2}}{1 + \frac{1}{2}z^{-1}}
 \implies h(n) &= \brak{-\frac{1}{2}}^{n}u(n) + \brak{-\frac{1}{2}}^{n-2}u(n-2)
 \end{align}
 using \eqref{eq:anun} and \eqref{eq:z_trans_shift}.
-\item Sketch $h(n)$. Is it bounded? Convergent? 
+\item Sketch $h(n)$. Is it bounded? Justify theoretically.
 \\
 \solution The following code plots Fig. \ref{fig:hn}.
 \begin{lstlisting}
@@ -363,13 +445,56 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/hn.py
 \caption{$h(n)$ as the inverse of $H(z)$}
 \label{fig:hn}
 \end{figure}
-As we can see from the plot $h(n)$ is both bounded and convergent.
+As we can see from the plot $h(n)$ is bounded.
+Theoretically,
+	\begin{align}
+		&\abs{u(n)} &\le 1 \\
+		&\abs{\brak{-\frac12}^n} &\le 1 \\
+		\implies &\abs{\brak{-\frac12}^n u(n)} &\le 1
+	\end{align}
+	
+	Similarly,
+	\begin{align}
+		&\abs{\brak{-\frac12}^{n-2} u(n-2)} &\le 1 \\
+		\implies &h(n) &\le 2
+	\end{align}
+	
+	Therefore $h(n)$ is bounded.
+  \item Is it convergetn? Justify using ratio test.\\
+  \solution Using the ratio test for convergence
+	\begin{align}
+		\lim_{n \to \infty} \abs{\frac{h(n+1)}{h(n)}} &= \lim_{n \to \infty} \abs{\frac{\brak{-\frac12}^{n-1} \brak{\frac14 + 1}}{\brak{-\frac12}^{n-2} \brak{\frac14 + 1}}} \\
+		&= \lim_{n \to \infty} \abs{-\frac12} \\
+		&= \frac{1}{2} < 1
+	\end{align}
+	
+	Therefore, $h(n)$ is convergent.
 \item The system with $h(n)$ is defined to be stable if
 \begin{equation}
 \sum_{n=-\infty}^{\infty}h(n) < \infty
 \end{equation}
 Is the system defined by \eqref{eq:iir_filter} stable for the impulse response in \eqref{eq:impulse_resp}?\\
-\solution We can caluclate the sum of the values and it comes out to be $1.33203125$ which is clearly less than $\infty\\ \therefore$ The system is stable
+\solution
+	\begin{multline}
+		\sum_{n=-\infty}^{\infty}h(n) = \sum_{n=-\infty}^{\infty} \brak{-\frac12}^n u(n) \\
+		+ \sum_{n=-\infty}^{\infty} \brak{-\frac12}^{n-2} u(n-2)
+	\end{multline}
+	\begin{align}
+		\sum_{n=-\infty}^{\infty}h(n) = \sum_{n=0}^{\infty}\brak{-\frac12}^n + \sum_{n=2}^{\infty}\brak{-\frac12}^{n-2}
+	\end{align}
+	
+	These are both sums of infinite geometric progressions with first terms $1$ and common ratios $-\frac12$
+	\begin{align}
+		\sum_{n=-\infty}^{\infty}h(n) &= \frac{1}{1 - \brak{-\frac12}} + \frac{1}{1 - \brak{-\frac12}} \\
+		&= \frac{4}{3} < \infty
+	\end{align}
+	Therefore, the system is stable. 
+  \item Verify the above result using a Python code. 
+	
+	\solution The stability has been verified in the following code
+  \begin{lstlisting}
+    wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/hndef.py
+    \end{lstlisting}
 \item 
 Compute and sketch $h(n)$ using 
 \begin{equation}
@@ -379,9 +504,48 @@ h(n) + \frac{1}{2}h(n-1) = \delta(n) + \delta(n-2),
 %
 This is the definition of $h(n)$.
 \\
-\solution The following code plots Fig. \ref{fig:hndef}. Note that this is the same as Fig. 
+\solution 
+	\begin{equation}
+		h(0) = 1
+	\end{equation}
+	
+	Now, for $n = 1$,
+	\begin{align}
+		h(1) + \frac12 h(0) &= \delta(1) + \delta(-1) = 0 \\
+		\implies h(1) &= - \frac{1}{2} h(0) = -\frac{1}{2}
+	\end{align}
+	
+	For $n = 2$,
+	\begin{align}
+		h(2) + \frac12 h(1) &= \delta(2) + \delta(0) = 1 \\
+		\implies h(2) &= 1 - \frac{1}{2} h(1) = \frac{5}{4}
+	\end{align}
+	
+	For $n > 2$, the right hand side of the equation is always zero. Thus,
+	\begin{align}
+		h(n) &= -\frac{1}{2} h(n-1) \qquad n > 2 \\
+		h(3) &= \frac{5}{4} \brak{-\frac12} \\
+		h(4) &= \frac{5}{4} \brak{-\frac12}^2 \\
+		&~\vdots \\
+		h(n) &= \frac{5}{4} \brak{-\frac12}^{n-2}
+	\end{align}
+	
+	Therefore,
+	\begin{align}
+		h(n) = 
+		\begin{cases}
+			1 & n = 0 \\
+			-\dfrac{1}{2} & n = 1 \\
+			\dfrac{5}{4} \brak{-\dfrac12}^{n-2} & n \ge 2
+		\end{cases}
+	\end{align}
+	
+	Thus, it is bounded and convergent to $0$
+	\begin{equation}
+		\lim_{n \to \infty} h(n) = 0
+	\end{equation}
+   The following code plots Fig. \ref{fig:hndef}. Note that this is the same as Fig. 
 \ref{fig:hn}. 
-%
 \begin{lstlisting}
 wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/hndef.py
 \end{lstlisting}
@@ -416,6 +580,52 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/ynconv.
 \caption{$y(n)$ from the definition of convolution}
 \label{fig:ynconv}
 \end{figure}
+\item Express the above convolution using a Toeplitz matrix.
+	
+	\solution Let 
+	\begin{align}
+		\vec{x} = \myvec{1 \\ 2 \\ 3 \\ 4 \\ 2 \\ 1} \qquad
+		\vec{h} = \myvec{1 \\ -0.5 \\ 1.25 \\ -0.62 \\ 0.31 \\ -0.16}
+	\end{align}
+	
+	Their convolution is given by the product of the following Toeplitz matrix $\vec{T}$
+	\begin{align}
+		\myvec{
+			1 & 0 & 0 & 0 & 0 & 0 \\
+			-0.5 & 1 & 0 & 0 & 0 & 0 \\
+			1.25 & -0.5 & 1 & 0 & 0 & 0 \\
+			-0.62 & 1.25 & -0.5 & 1 & 0 & 0 \\
+			0.31 & -0.62 & 1.25 & -0.5 & 1 & 0 \\
+			-0.16 & 0.31 & -0.62 & 1.25 & -0.5 & 1 \\
+			0 & -0.16 & 0.31 & -0.62 & 1.25 & -0.5 \\
+			0 & 0 & -0.16 & 0.31 & -0.62 & 1.25 \\
+			0 & 0 & 0 & -0.16 & 0.31 & -0.62 \\
+			0 & 0 & 0 & 0 & -0.16 & 0.31 \\
+			0 & 0 & 0 & 0 & 0 & -0.16 \\
+		} 
+	\end{align}
+	and $\vec{x}$
+	
+	\begin{align}
+		&\vec{y} = \vec{x} \circledast \vec{h} = \vec{Tx} = \myvec{1 \\ 1.5 \\ 3.25 \\ 4.38 \\ 2.81 \\ 3.59 \\ 0.12 \\ 0.78 \\ -0.62 \\ 0 \\ -0.16}
+	\end{align}
+	
+	Download the following Python code for computing the convolution by using a Toeplitz matrix and plotting Fig. \ref{fig-5.9}
+	\begin{lstlisting}
+		wget https://github.com/Ankit-Saha-2003/EE3900/raw/main/Assignment_1/codes/5.9.py
+	\end{lstlisting}
+	
+	Run the Python code by executing
+	\begin{lstlisting}
+		python 5.9.py
+	\end{lstlisting}
+
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=\columnwidth]{./figs/5.9.pdf}
+		\caption{Plot of the convolution of $x(n)$ and $h(n)$}
+		\label{fig-5.9}	
+	\end{figure}
 \item Show that
 \begin{equation}
 y(n) =  \sum_{k=-\infty}^{\infty}x(n-k)h(k)
