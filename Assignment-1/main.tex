@@ -22,6 +22,7 @@
     \usepackage{hhline}                                           
     \usepackage{ifthen}                                           
     \usepackage{lscape} 
+	\usepackage{siunitx}
 \DeclareMathOperator\erf{erf}    
 \DeclareMathOperator*{\Res}{Res}
 \DeclareMathOperator*{\equals}{=}
@@ -460,7 +461,7 @@ Theoretically,
 	\end{align}
 	
 	Therefore $h(n)$ is bounded.
-  \item Is it convergetn? Justify using ratio test.\\
+  \item Is it convergent? Justify using ratio test.\\
   \solution Using the ratio test for convergence
 	\begin{align}
 		\lim_{n \to \infty} \abs{\frac{h(n+1)}{h(n)}} &= \lim_{n \to \infty} \abs{\frac{\brak{-\frac12}^{n-1} \brak{\frac14 + 1}}{\brak{-\frac12}^{n-2} \brak{\frac14 + 1}}} \\
@@ -493,7 +494,7 @@ Is the system defined by \eqref{eq:iir_filter} stable for the impulse response i
 	
 	\solution The stability has been verified in the following code
   \begin{lstlisting}
-    wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/hndef.py
+    wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/5_6.py
     \end{lstlisting}
 \item 
 Compute and sketch $h(n)$ using 
@@ -687,7 +688,7 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_2.py
   \label{eq:inv-ft}
  \end{equation}
  \\
- \solution The following code plots Fig. \ref{fig:ynconv}. Note that this is the same as 
+ \solution The following code plots Fig. \ref{fig:yndft}. Note that this is the same as 
  $y(n)$ in  Fig. 
  \ref{fig:xnyn}. 
  %
@@ -697,7 +698,7 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_2.py
  \begin{figure}[!ht]
  \centering
  \includegraphics[width=\columnwidth]{./figs/yndft}
- \caption{$y(n)$ from the DFT}
+ \caption{$y(n)$ from the IDFT}
  \label{fig:yndft}
  \end{figure}
  \item Repeat the previous exercise by computing $X(k), H(k)$ and $y(n)$ through FFT and 
@@ -746,39 +747,166 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_4.py
  \begin{align}
    \mtx{Y} = \mtx{H}\cdot\mtx{X} = \brak{\mtx{W}\mtx{h}}\cdot\brak{\mtx{W}\mtx{x}}
  \end{align}
+ \item Verify the above equations by generating the DFT matrix in Python.
+	
+	\solution Download the following Python code that plots Fig. \ref{fig-6.5}
+	\begin{lstlisting}
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_6.py
+	\end{lstlisting}
+	
+	Run the code by executing
+	\begin{lstlisting}
+python 6_6.py
+	\end{lstlisting}
+	
+	\begin{figure}[!ht]
+
+		\centering
+		\includegraphics[width=0.8\columnwidth]{./figs/6_6.pdf}
+		\caption{Plot of $y(n)$ by DFT matrix}
+		\label{fig-6.5}	
+	\end{figure}
+	
+	The plot is exactly the same as that obtained in Fig. \ref{fig:xnyn}
+
  \end{enumerate}
  %
  \section{Exercises}
- Answer the following questions by looking at the python code in Problem \ref{prob:output}.
- \begin{enumerate}[label=\thesection.\arabic*]
- \item
- The command
- \begin{lstlisting}
-   output_signal = signal.lfilter(b, a, input_signal)
-   \end{lstlisting}
- in Problem \ref{prob:output} is executed through the following difference equation
- \begin{equation}
- \label{eq:iir_filter_gen}
-  \sum _{m=0}^{M}a\brak{m}y\brak{n-m}=\sum _{k=0}^{N}b\brak{k}x\brak{n-k}
- \end{equation}
- %
- where the input signal is $x(n)$ and the output signal is $y(n)$ with initial values all 0. Replace
- \textbf{signal.filtfilt} with your own routine and verify.
- %
- \item Repeat all the exercises in the previous sections for the above $a$ and $b$.
- \item What is the sampling frequency of the input signal?
- \\
- \solution 
- Sampling frequency(fs)=44.1kHZ.
- \item
- What is type, order and  cutoff-frequency of the above butterworth filter
- \\
- \solution
- The given butterworth filter is low pass with order=2 and cutoff-frequency=4kHz.
- %
- \item
- Modifying the code with different input parameters and to get the best possible output.
- %
+ Answer the following questions by looking at the python code in Problem \ref{prob:output}
+	
+	\begin{enumerate}[label=\thesection.\arabic*]
+ \item The command
+	\begin{lstlisting}
+	output_signal = signal.lfilter(b, a, input_signal)
+	\end{lstlisting}
+	in Problem \ref{prob:output} is executed through the following difference equation
+	\begin{equation}
+		\label{eq:iir_filter_gen}
+ 		\sum _{m=0}^{M}a\brak{m}y\brak{n-m}=\sum _{k=0}^{N}b\brak{k}x\brak{n-k}
+	\end{equation}
+	where the input signal is $x(n)$ and the output signal is $y(n)$ with initial values all 0. Replace \textbf{signal.filtfilt} with your own routine and verify.
+	
+	\solution On taking the $Z$-transform on both sides of the difference equation
+	\begin{align}
+		\sum _{m=0}^{M}a\brak{m} z^{-m} Y(z) &= \sum _{k=0}^{N}b\brak{k} z^{-k} X(z) \\
+		\implies H(z) = \frac{Y(z)}{X(z)} &= \frac{\sum _{k=0}^{N}b\brak{k} z^{-k}}{\sum _{m=0}^{M}a\brak{m} z^{-m}}
+	\end{align}
+	
+	For obtaining the discrete Fourier transform, put $z = \j \frac{2\pi i}{I}$ where $I$ is the length of the input signal and $i = 0, 1, \ldots, I-1$
+	
+	Download the following Python code that does the above
+	\begin{lstlisting}
+wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/7_1.py
+	\end{lstlisting}
+	
+	Run the code by executing
+	\begin{lstlisting}
+		python 7_1.py
+	\end{lstlisting}
+	
+	\item Repeat all the exercises in the previous sections for the above $a$ and $b$
+	
+	\solution The polynomial coefficients obtained are
+	\begin{align}
+		\vec{a} = \myvec{1.000 \\ -2.519 \\ 2.561 \\ -1.206 \\ 0.220} \qquad
+		\vec{b} = \myvec{0.003 \\ 0.014 \\ 0.021 \\ 0.014 \\ 0.003}
+	\end{align}
+	
+	The difference equation is then given by
+	\begin{equation}
+		\vec{a}^\top \vec{y} = \vec{b}^\top \vec{x} 
+	\end{equation}
+	
+	where
+	\begin{align}
+		\vec{y} = \myvec{y(n) \\ y(n-1) \\ y(n-2) \\ y(n-3) \\ y(n-4)} \qquad
+		\vec{x} = \myvec{x(n) \\ x(n-1) \\ x(n-2) \\ x(n-3) \\ x(n-4)}
+	\end{align}
+	
+	We have
+	\begin{equation}
+		H(z) = \frac{Y(z)}{X(z)} = \frac{\sum _{k=0}^{N}b\brak{k} z^{-k}}{\sum _{m=0}^{M}a\brak{m} z^{-m}}
+	\end{equation}
+	
+	By using partial fraction decomposition, we can write this as
+	\begin{equation}
+		H(z) = \sum_i \frac{r(i)}{1-p(i)z^{-1}} + \sum_j k(j)z^{-j}
+	\end{equation}
+	
+	On taking the inverse $Z$-transform on both sides by using \eqref{eq:anun}
+	\begin{align}
+		H(z) &\ztrans h(n) \\
+		\frac{1}{1-p(i)z^{-1}} &\ztrans \brak{p(i)}^nu(n) \\
+		z^{-j} &\ztrans \delta(n-j) 
+	\end{align}
+	
+	Thus
+	\begin{align}
+		h(n) = \sum_i r(i)\brak{p(i)}^nu(n) + \sum_j k(j)\delta(n-j)
+	\end{align}
+	
+	Download the following Python code
+	\begin{lstlisting}
+wget https://github.com/Ankit-Saha-2003/EE3900/raw/main/Assignment_1/codes/7_2.py
+	\end{lstlisting}
+	
+	Run the code by executing
+	\begin{lstlisting}
+python 7_2.py
+	\end{lstlisting}
+	
+	The above code outputs the values of $r(i), p(i), k(i)$
+	\begin{multline}
+		h(n) = 
+		 (0.24 - 0.71\j)(0.56 + 0.14\j)^n u(n) \\
+		+ (0.24 + 0.71\j)(0.56 - 0.14\j)^n u(n) \\
+		+ (-0.25 + 0.12\j)(0.70 + 0.41\j)^n u(n) \\
+		+ (-0.25 - 0.12\j)(0.70 - 0.41\j)^n u(n) \\
+		+ 0.016\delta(n)
+	\end{multline}
+	
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=\columnwidth]{./figs/7.2.1.png}
+		\caption{Plot of $y(n)$}
+		\label{fig-7.2.1}	
+	\end{figure}
+	
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=\columnwidth]{./figs/7.2.2.png}
+		\caption{Plot of $\abs{H(e^{\j\omega})}$}
+		\label{fig-7.2.2}	
+	\end{figure}
+	
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=\columnwidth]{./figs/7.2.3.png}
+		\caption{Plot of $h(n)$}
+		\label{fig-7.2.3}	
+	\end{figure}
+	
+	\item What is the sampling frequency of the input signal?
+	
+	\solution The sampling frequency of the input signal is \SI{44100}{\hertz} = \SI{44.1}{\kilo\hertz}
+	
+	\item What is the type, order and cutoff frequency of the above Butterworth filter?
+	
+	\solution 
+	
+	Type: low-pass
+	
+	Order: 4
+	
+	Cutoff frequency: \SI{4000}{\hertz} = \SI{4}{\kilo\hertz}
+	
+	\item Modify the code with different input parameters to get the best possible output.
+	
+	\solution
+	
+	Order: 10
+	
+	Cutoff frequency: \SI{3000}{\hertz} = \SI{3}{\kilo\hertz}
  \end{enumerate}
  
 \end{document}   
