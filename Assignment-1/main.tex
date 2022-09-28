@@ -23,6 +23,8 @@
     \usepackage{ifthen}                                           
     \usepackage{lscape} 
 	\usepackage{siunitx}
+	\usepackage{lstautogobble}
+
 \DeclareMathOperator\erf{erf}    
 \DeclareMathOperator*{\Res}{Res}
 \DeclareMathOperator*{\equals}{=}
@@ -34,10 +36,11 @@
 \renewcommand\thesubsubsectiondis{\thesubsectiondis.\arabic{subsubsection}}
 \hyphenation{op-tical net-works semi-conduc-tor}
 \def\inputGnumericTable{}                                 %%
-\lstset{ 
-frame=single,
-breaklines=true,
-columns=fullflexible
+\lstset {
+	frame=single, 
+	breaklines=true,
+	columns=fullflexible,
+	autogobble=true
 }
 \begin{document}
 \newtheorem{theorem}{Theorem}[section]
@@ -106,6 +109,7 @@ columns=fullflexible
 \providecommand{\dec}[2]{\ensuremath{\overset{#1}{\underset{#2}{\gtrless}}}}
 \newcommand{\myvec}[1]{\ensuremath{\begin{pmatrix}#1\end{pmatrix}}}
 \newcommand{\mydet}[1]{\ensuremath{\begin{vmatrix}#1\end{vmatrix}}}
+\newcommand{\mymat}[1]{\ensuremath{\begin{bmatrix}#1\end{bmatrix}}}
 \numberwithin{equation}{section}
 \numberwithin{figure}{section}
 \numberwithin{table}{section} 
@@ -613,7 +617,7 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/ynconv.
 	
 	Download the following Python code for computing the convolution by using a Toeplitz matrix and plotting Fig. \ref{fig-5.9}
 	\begin{lstlisting}
-		wget https://github.com/Ankit-Saha-2003/EE3900/raw/main/Assignment_1/codes/5.9.py
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/5_9.py
 	\end{lstlisting}
 	
 	Run the Python code by executing
@@ -715,62 +719,745 @@ wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_2.py
 \begin{lstlisting}
 wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_4.py
 \end{lstlisting}
- \item Wherever possible, express all the above equations as matrix equations.\\
- \solution
- We use the DFT Matrix, where $\omega = e^{-\frac{j2k\pi}{N}}$, which is given by
- \begin{align}
-   \mtx{W} = 
-   \begin{pmatrix}
-     \omega^0 & \omega^0 & \ldots & \omega^0 \\
-     \omega^0 & \omega^1 & \ldots & \omega^{N - 1} \\
-     \vdots & \vdots & \ddots & \vdots \\
-     \omega^0 & \omega^{N - 1} & \ldots & \omega^{(N -1)(N - 1)}
-   \end{pmatrix}
- \end{align}
- i.e. $W_{jk} = \omega^{jk}$, $0 \leq j, k < N$. Hence, we can write any DFT equation as
- \begin{align}
-   \mtx{X} = \mtx{W}\mtx{x} = \mtx{x}\mtx{W}
- \end{align}
- \noindent where
- \begin{align}
-   \mtx{x} = 
-   \begin{pmatrix}
-     x(0) \\ x(1) \\ \vdots \\ x(n - 1)
-   \end{pmatrix}
- \end{align}
- \noindent Using \eqref{eq:inv-ft}, the inverse Fourier Transform is given by
- \begin{align}
-   \mtx{x} = \mathcal{F}^{-1}\brak{\mtx{X}} = \mtx{W}^{-1}\mtx{X} &= \frac{1}{N}\mtx{W^{H}}\mtx{X} = \frac{1}{N}\mtx{X}\mtx{W^{H}} \\ 
-   \implies \mtx{W}^{-1} &= \frac{1}{N}\mtx{W^{H}}
- \end{align}
- \noindent where $H$ denotes hermitian operator. We can rewrite \eqref{eq:fp} using the element-wise multiplication operator as
- \begin{align}
-   \mtx{Y} = \mtx{H}\cdot\mtx{X} = \brak{\mtx{W}\mtx{h}}\cdot\brak{\mtx{W}\mtx{x}}
- \end{align}
- \item Verify the above equations by generating the DFT matrix in Python.
+ \end{enumerate}
+ %
+ \section{FFT}
+% \subsection{Definitions}
+\begin{enumerate}[label=\arabic*.,ref=\thesection.\theenumi]
+\numberwithin{equation}{section}
+    \item The DFT of $x(n)$ is given by
+    \begin{align}
+        X(k) \triangleq \sum_{n=0}^{N-1} x(n) e^{-j 2 \pi k n / N}, \quad k=0,1, \ldots, N-1
+    \end{align}
+\item Let 
+	\begin{align}
+W_{N} = e^{-j2\pi/N} 
+	\end{align}
+		Then the $N$-point {\em DFT matrix} is defined as 
+	\begin{align}
+		\vec{F}_{N} = \sbrak{W_{N}^{mn}}, \quad 0 \le m,n \le N-1 
+	\end{align}
+	where $W_{N}^{mn}$ are the elements of $\vec{F}_{N}$.
+\item Let 
+	\begin{align}
+		\vec{I}_4 = \myvec{\vec{e}_4^{1} &\vec{e}_4^{2} &\vec{e}_4^{3} &\vec{e}_4^{4} }
+	\end{align}
+		be the $4\times 4$ identity matrix.  Then the 4 point {\em DFT permutation matrix} is defined as 
+	\begin{align}
+		\vec{P}_4 = \myvec{\vec{e}_4^{1} &\vec{e}_4^{3} &\vec{e}_4^{2} &\vec{e}_4^{4} }
+	\end{align}
+\item The 4 point {\em DFT diagonal matrix} is defined as 
+	\begin{align}
+		\vec{D}_4 = diag\myvec{W_{8}^{0} & W_{8}^{1} & W_{8}^{2} & W_{8}^{3}}
+	\end{align}
+\item Show that 
+\begin{equation}
+    W_{N}^{2}=W_{N/2}
+\end{equation}
+\solution
+\begin{align}
+     W_{N} &= e^{-j2\pi/N} \\
+     W_{N}^{2} &= e^{-j2 \pi \times 2/N} \\ 
+     &=e^{-j2 \pi/(N/2)}\\
+     &=W_{N/2}
+\end{align}
+%    \item Find $\vec{P}_6$.
+%    \item Find $\vec{D}_3$.
+    \item Show that 
+\begin{equation}
+	\vec{F}_{4}=
+\begin{bmatrix}
+	\vec{I}_{2} & \vec{D}_{2} \\
+\vec{I}_{2} & -\vec{D}_{2}
+\end{bmatrix}
+\begin{bmatrix}
+\vec{F}_{2} & 0 \\
+0 & \vec{F}_{2}
+\end{bmatrix}
+\vec{P}_{4}
+\end{equation}
+\solution
+	\begin{align}
+		&\mymat{\vec{I}_2 & \vec{D}_2 \\ \vec{I}_2 & -\vec{D}_2} \mymat{\vec{F}_2 & 0 \\ 0 & \vec{F}_2} \\
+		= &\mymat{\vec{F}_2 & \vec{D}_2\vec{F}_2 \\ \vec{F}_2 & -\vec{D}_2\vec{F}_2}  \\
+		= &\mymat{\myvec{1&1\\1&-1} & \myvec{1&0\\0&-\j}\myvec{1&1\\1&-1} \\ \myvec{1&1\\1&-1} & - \myvec{1&0\\0&-\j}\myvec{1&1\\1&-1}} \\
+		= &\mymat{1 & 1 & 1 & 1 \\ 1 & -1 & -\j & \j \\ 1 & 1 & -1 & -1 \\ 1 & -1 & \j & -\j}
+	\end{align}		
+	because $W_2^0 = 1$ and $W_2^1 = e^{-\j\pi} = -1$
+	Now
+	\begin{align}
+		&\mymat{\vec{I}_2 & \vec{D}_2 \\ \vec{I}_2 & -\vec{D}_2} \mymat{\vec{F}_2 & 0 \\ 0 & \vec{F}_2} \vec{P}_4 \\
+		= &\mymat{1 & 1 & 1 & 1 \\ 1 & -1 & -\j & \j \\ 1 & 1 & -1 & -1 \\ 1 & -1 & \j & -\j} \mymat{1 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1} \\
+		= &\mymat{1 & 1 & 1 & 1 \\ 1 & -\j & -1 & \j \\ 1 & -1 & 1 & -1 \\ 1 & \j & -1 & -\j} \\
+		= &\mymat{W_4^0 & W_4^0 & W_4^0 & W_4^0 \\ W_4^0 & W_4^1 & W_4^2 & W_4^3 \\ W_4^0 & W_4^2 & W_4^4 & W_4^6 \\ W_4^0 & W_4^3 & W_4^6 & W_4^9} \\
+		= &~\vec{F}_4
+	\end{align}
+	because
+	\begin{align}
+		W_4^0 &= 1 \\
+		W_4^1 &= e^{-\j\frac{\pi}{2}} = -\j \\
+		W_4^2 &= e^{-\j\pi} = -1 \\
+		W_4^3 &= e^{-\j\frac{3\pi}{2}} = \j \\
+		W_4^n &= W_4^{n - 4} &&\forall n \ge 4
+	\end{align}	 	
+\item Show that 
+\begin{equation}
+\vec{F}_{N}=
+\begin{bmatrix}
+\vec{I}_{N/2} & \vec{D}_{N/2} \\
+\vec{I}_{N/2} & -\vec{D}_{N/2}
+\end{bmatrix}
+\begin{bmatrix}
+\vec{F}_{N/2} & 0 \\
+0 & \vec{F}_{N/2}
+\end{bmatrix}
+\vec{P}_{N}
+\end{equation}
+\solution
+	\begin{align}
+		&\mymat{\vec{I}_{N/2} & \vec{D}_{N/2} \\ \vec{I}_{N/2} & -\vec{D}_{N/2}} \mymat{\vec{F}_{N/2} & 0 \\ 0 & \vec{F}_{N/2}}  \\
+		= &\mymat{\vec{F}_{N/2} & \vec{D}_{N/2}\vec{F}_{N/2} \\ \vec{F}_{N/2} & -\vec{D}_{N/2}\vec{F}_{N/2}}
+	\end{align}
 	
-	\solution Download the following Python code that plots Fig. \ref{fig-6.5}
+	Now
+	\begin{align}
+		&\vec{D}_{N/2}\vec{F}_{N/2} \\
+		&= \mymat{W_N^0 & \cdots & 0 \\ \vdots & \ddots & \vdots \\ 0 & \cdots & W_N^{N/2-1}} \mymat{W_{N/2}^0 & \cdots & W_{N/2}^0 \\ \vdots & \ddots & \vdots \\ W_{N/2}^0 & \cdots & W_{N/2}^{(N/2 - 1)^2}} \\
+		&= \mymat{W_N^0 W_{N/2}^0 & \cdots & W_N^0 W_{N/2}^0 \\ \vdots & \ddots & \vdots \\ W_N^{N/2-1} W_{N/2}^0 & \cdots & W_N^{N/2-1} W_{N/2}^{(N/2 - 1)^2}} 
+	\end{align}
+	
+	Thus
+	\begin{align}
+		\brak{\vec{D}_{N/2}\vec{F}_{N/2}}_{ij} &= W_N^i W_{N/2}^{ij} \\
+		&= W_N^i W_N^{2ij} \\
+		&= W_N^{i(2j + 1)}
+	\end{align}
+	where $i, j = 0, \ldots, N/2 - 1$
+	
+	Therefore, $\vec{D}_{N/2}\vec{F}_{N/2}$ forms the first $N/2$ rows of the odd-indexed columns of $\vec{F}_N$
+	\begin{align}
+		W_N^{(i + N/2)(2j + 1)} &= \exp\brak{-\j \frac{2\pi}{N} (2j + 1)\brak{i + \frac{N}{2}}} \\
+		&= \exp\brak{-\j \brak{\frac{2\pi}{N} (2j + 1)i + (2j + 1)\pi}} \\
+		&= -\exp\brak{-\j \frac{2\pi}{N} (2j + 1)i} \\
+		&= -W_N^{i(2j + 1)}
+	\end{align}
+	
+	Thus, the remaining $N/2$ rows will be the negatives of the first $N/2$ rows
+	\begin{align}
+		\brak{\vec{F}_{N/2}}_{ij} &= W_{N/2}^{ij} \\
+		&= W_N^{i(2j)}
+	\end{align}
+	where $i, j = 0, \ldots, N/2 - 1$
+	
+	Therefore, $\vec{F}_{N/2}$ forms the first $N/2$ rows of the even-indexed columns of $\vec{F}_N$
+	\begin{align}
+		W_N^{(i + N/2)(2j)} &= \exp\brak{-\j \frac{2\pi}{N} (2j)\brak{i + \frac{N}{2}}} \\
+		&= \exp\brak{-\j \brak{\frac{2\pi}{N} (2j)i + (2j)\pi}} \\
+		&= \exp\brak{-\j \frac{2\pi}{N} (2j)i} \\
+		&= W_N^{i(2j)}
+	\end{align}
+	Thus, the remaining $N/2$ rows will be the same as the first $N/2$ rows
+	
+	Therefore
+	\begin{align}
+		\mymat{\vec{F}_{N/2} & \vec{D}_{N/2}\vec{F}_{N/2} \\ \vec{F}_{N/2} & -\vec{D}_{N/2}\vec{F}_{N/2}} = \vec{F}_N \vec{P}_N
+	\end{align}
+	where 
+	\begin{align}
+		\vec{P}_N = \myvec{\vec{e}_N^1 & \vec{e}_N^3 & \cdots & \vec{e}_N^{N-1} & \vec{e}_N^2 & \vec{e}_N^4 & \cdots & \vec{e}_N^N}
+	\end{align}
+	
+	Hence
+	\begin{align}
+		\mymat{\vec{F}_{N/2} & \vec{D}_{N/2}\vec{F}_{N/2} \\ \vec{F}_{N/2} & -\vec{D}_{N/2}\vec{F}_{N/2}} \vec{P}_N = \vec{F}_N \vec{P}_N^2 = \vec{F}_N \\
+		\therefore \vec{F}_N = \mymat{\vec{I}_{N/2} & \vec{D}_{N/2} \\ \vec{I}_{N/2} & -\vec{D}_{N/2}} \mymat{\vec{F}_{N/2} & 0 \\ 0 & \vec{F}_{N/2}} \vec{P}_N
+	\end{align}
+	for even $N$
+
+\item Find 
+    \begin{align}
+	     \vec{P}_4 \vec{x}
+    \end{align}
+	\solution Let $\vec{x} = \myvec{x(0) & x(1) & x(2) & x(3)}^\top$
+    \begin{align}
+		\vec{P}_4 \vec{x} &= \mymat{1 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1} \mymat{x(0) \\ x(1) \\ x(2) \\ x(3)} \\
+		&= \mymat{x(0) \\ x(2) \\ x(1) \\ x(3)}
+    \end{align}
+\item Show that 
+    \begin{align}
+	    \vec{X} = \vec{F}_N \vec{x}
+	    \label{eq:dft-mat-def}
+    \end{align}
+		where $\vec{x}, \vec{X}$ are the vector representations of $x(n), X(k)$ respectively.
+		\solution
+	\begin{align}
+        X(k) &= \sum_{n=0}^{N-1} x(n) e^{-j 2 \pi k n / N}, \quad k=0,1, \ldots, N-1 \\
+        \implies \vec{X} &= \mymat{\sum_{n=0}^{N-1} x(n) e^{-j 2 \pi  n (0) / N} \\ \vdots \\ \sum_{n=0}^{N-1} x(n) e^{-j 2 \pi  n (N-1) / N}} \\
+        &= \mymat{x(0) + \cdots + x(N-1) \\ \vdots \\ x(0) + \cdots + x(N-1) e^{-j 2 \pi (N-1)^2 / N}} 
+    \end{align}
+    \begin{align}
+    		\vec{X} &= x(0) \mymat{1 \\ \vdots \\ 1} + \cdots + x(N-1)\mymat{1 \\ \vdots \\ e^{-j 2 \pi (N-1)^2 / N}} \\
+    		&= \mymat{1 & \cdots & 1 \\ \vdots & \ddots & \vdots \\ 1 & \cdots & e^{-j 2 \pi (N-1)^2 / N}} \mymat{x(0) \\ \vdots \\ x(N-1)} \\
+    		&= \vec{F}_N \vec{x}
+    \end{align}
+\item Derive the following Step-by-step visualisation  of
+8-point FFTs into 4-point FFTs and so on
+\begin{equation}
+\begin{bmatrix}
+X(0) \\ 
+X(1) \\ 
+X(2) \\ 
+X(3)
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{1}(0) \\ 
+X_{1}(1)\\ 
+X_{1}(2)\\
+X_{1}(3)\\
+\end{bmatrix}
++
+\begin{bmatrix}
+W^{0}_{8} & 0 & 0 & 0\\
+0 & W^{1}_{8} & 0 & 0\\
+0 & 0 & W^{2}_{8} & 0\\
+0 & 0 & 0 & W^{3}_{8}
+\end{bmatrix}
+\begin{bmatrix}
+X_{2}(0) \\ 
+X_{2}(1) \\ 
+X_{2}(2) \\
+X_{2}(3)
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X(4) \\ 
+X(5) \\ 
+X(6) \\ 
+X(7)
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{1}(0) \\ 
+X_{1}(1)\\ 
+X_{1}(2)\\
+X_{1}(3)\\
+\end{bmatrix}
+-
+\begin{bmatrix}
+W^{0}_{8} & 0 & 0 & 0\\
+0 & W^{1}_{8} & 0 & 0\\
+0 & 0 & W^{2}_{8} & 0\\
+0 & 0 & 0 & W^{3}_{8}
+\end{bmatrix}
+\begin{bmatrix}
+X_{2}(0) \\ 
+X_{2}(1) \\ 
+X_{2}(2) \\
+X_{2}(3)
+\end{bmatrix}
+\end{equation}
+4-point FFTs into 2-point FFTs
+\begin{equation}
+\begin{bmatrix}
+X_{1}(0) \\ 
+X_{1}(1)\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{3}(0) \\ 
+X_{3}(1)\\ 
+\end{bmatrix}
++
+\begin{bmatrix}
+W^{0}_{4} & 0\\
+0 & W^{1}_{4}
+\end{bmatrix}
+\begin{bmatrix}
+X_{4}(0) \\ 
+X_{4}(1) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X_{1}(2) \\ 
+X_{1}(3)\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{3}(0) \\ 
+X_{3}(1)\\ 
+\end{bmatrix}
+-
+\begin{bmatrix}
+W^{0}_{4} & 0\\
+0 & W^{1}_{4}
+\end{bmatrix}
+\begin{bmatrix}
+X_{4}(0) \\ 
+X_{4}(1) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X_{2}(0) \\ 
+X_{2}(1)\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{5}(0) \\ 
+X_{5}(1)\\ 
+\end{bmatrix}
++
+\begin{bmatrix}
+W^{0}_{4} & 0\\
+0 & W^{1}_{4}
+\end{bmatrix}
+\begin{bmatrix}
+X_{6}(0) \\ 
+X_{6}(1) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X_{2}(2) \\ 
+X_{2}(3)\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{5}(0) \\ 
+X_{5}(1)\\ 
+\end{bmatrix}
+-
+\begin{bmatrix}
+W^{0}_{4} & 0\\
+0 & W^{1}_{4}
+\end{bmatrix}
+\begin{bmatrix}
+X_{6}(0) \\ 
+X_{6}(1) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+P_{8}
+\begin{bmatrix}
+x(0) \\ 
+x(1) \\ 
+x(2) \\ 
+x(3) \\ 
+x(4) \\ 
+x(5) \\
+x(6) \\
+x(7)
+\end{bmatrix}
+ = 
+\begin{bmatrix}
+x(0) \\ 
+x(2) \\ 
+x(4) \\ 
+x(6) \\
+x(1) \\ 
+x(3) \\ 
+x(5) \\
+x(7)
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+P_{4}
+\begin{bmatrix}
+x(0) \\ 
+x(2) \\ 
+x(4) \\ 
+x(6) \\
+\end{bmatrix}
+ = 
+\begin{bmatrix}
+x(0) \\ 
+x(4) \\ 
+x(2) \\
+x(6)
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+P_{4}
+\begin{bmatrix}
+x(1) \\ 
+x(3) \\ 
+x(5) \\
+x(7)
+\end{bmatrix}
+ = 
+\begin{bmatrix}
+x(1) \\ 
+x(5) \\ 
+x(3) \\ 
+x(7) \\
+\end{bmatrix}
+\end{equation}
+Therefore,
+\begin{equation}
+\begin{bmatrix}
+X_{3}(0) \\ 
+X_{3}(1)\\ 
+\end{bmatrix}
+= F_{2}
+\begin{bmatrix}
+x(0) \\ 
+x(4) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X_{4}(0) \\ 
+X_{4}(1)\\ 
+\end{bmatrix}
+= F_{2}
+\begin{bmatrix}
+x(2) \\ 
+x(6) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X_{5}(0) \\ 
+X_{5}(1)\\ 
+\end{bmatrix}
+= F_{2}
+\begin{bmatrix}
+x(1) \\ 
+x(5) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X_{6}(0) \\ 
+X_{6}(1)\\ 
+\end{bmatrix}
+= F_{2}
+\begin{bmatrix}
+x(3) \\ 
+x(7) \\ 
+\end{bmatrix}
+\end{equation}
+\solution 
+	\begin{align}
+        X(k) &= \sum_{n=0}^7 x(n) e^{-j 2 \pi k n / 8}, \quad k=0, \ldots, 7\\
+        &= \sum_{n=0}^7 x(n) W_8^{kn} \\
+        &= \sum_{n \text{ is even}}x(n) W_8^{kn} + \sum_{n \text{ is odd}}x(n) W_8^{kn} \\
+        &= \sum_{m=0}^3 x(2m) W_8^{2km} + \sum_{m=0}^3 x(2m+1) W_8^{2km + k}
+    \end{align}	
+    
+    Now substitute $W_8^2 = W_4$
+    \begin{align}
+    		X(k) = \sum_{m=0}^3 x(2m) W_4^{km} + W_8^k \sum_{m=0}^3 x(2m+1) W_4^{km}
+    \end{align}
+    
+    Consider
+    \begin{align}
+    		x_1(n) = \cbrak{x(0), x(2), x(4), x(6)} \\
+    		x_2(n) = \cbrak{x(1), x(3), x(5), x(7)}
+    \end{align}
+    
+    Thus
+    \begin{align}
+    		X(k) = X_1(k) + W_8^k X_2(k) \qquad k = 0,\ldots,7
+    \end{align}
+    
+    Now, $X_1(k)$ and $X_2(k)$ are $4$-point DFTs which means they are periodic with period $4$
+    \begin{align}
+    		X(k+4) &= X_1(k+4) + W_8^{k+4} X_2(k+4) \\
+    		&= X_1(k) + e^{-\j 2\pi(k+4)/8} X_2(k) \\
+    		&= X_1(k) + e^{-\j (2\pi k/8 + \pi)} X_2(k) \\
+    		&= X_1(k) - e^{-\j 2\pi k/8 } X_2(k) \\
+    		&= X_1(k) - W_8^k X_2(k)
+    \end{align}
+    
+    Therefore, for $k=0,1,2,3$
+    \begin{align}
+    		X(k) = X_1(k) + W_8^k X_2(k)  \\
+    		X(k+4) = X_1(k) - W_8^k X_2(k) 
+    \end{align}
+    
+    which is the same as
+    \begin{equation}
+\begin{bmatrix}
+X(0) \\ 
+X(1) \\ 
+X(2) \\ 
+X(3)
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{1}(0) \\ 
+X_{1}(1)\\ 
+X_{1}(2)\\
+X_{1}(3)\\
+\end{bmatrix}
++
+\begin{bmatrix}
+W^{0}_{8} & 0 & 0 & 0\\
+0 & W^{1}_{8} & 0 & 0\\
+0 & 0 & W^{2}_{8} & 0\\
+0 & 0 & 0 & W^{3}_{8}
+\end{bmatrix}
+\begin{bmatrix}
+X_{2}(0) \\ 
+X_{2}(1) \\ 
+X_{2}(2) \\
+X_{2}(3)
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X(4) \\ 
+X(5) \\ 
+X(6) \\ 
+X(7)
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{1}(0) \\ 
+X_{1}(1)\\ 
+X_{1}(2)\\
+X_{1}(3)\\
+\end{bmatrix}
+-
+\begin{bmatrix}
+W^{0}_{8} & 0 & 0 & 0\\
+0 & W^{1}_{8} & 0 & 0\\
+0 & 0 & W^{2}_{8} & 0\\
+0 & 0 & 0 & W^{3}_{8}
+\end{bmatrix}
+\begin{bmatrix}
+X_{2}(0) \\ 
+X_{2}(1) \\ 
+X_{2}(2) \\
+X_{2}(3)
+\end{bmatrix}
+\end{equation}
+
+	Similarly, we can divide $x_1(n)$ into 
+	\begin{align}
+		x_3(n) = \cbrak{x(0), x(4)} \\
+		x_4(n) = \cbrak{x(2), x(6)}
+	\end{align}
+	i.e.,
+	\begin{align}
+		\mymat{X_3(0) \\ X_3(1)} = \vec{F}_2 \mymat{x(0) \\ x(4)} \\
+		\mymat{X_4(0) \\ X_4(1)} = \vec{F}_2 \mymat{x(2) \\ x(6)}
+	\end{align}
+	to get
+	\begin{align}
+		X_1(k) = X_3(k) + W_4^k X_4(k) \\
+		X_1(k + 2) = X_3(k) - W_4^k X_4(k) 
+	\end{align}
+	for $k = 0, 1$
+	\begin{equation}
+\begin{bmatrix}
+X_{1}(0) \\ 
+X_{1}(1)\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{3}(0) \\ 
+X_{3}(1)\\ 
+\end{bmatrix}
++
+\begin{bmatrix}
+W^{0}_{4} & 0\\
+0 & W^{1}_{4}
+\end{bmatrix}
+\begin{bmatrix}
+X_{4}(0) \\ 
+X_{4}(1) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+\begin{bmatrix}
+X_{1}(2) \\ 
+X_{1}(3)\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{3}(0) \\ 
+X_{3}(1)\\ 
+\end{bmatrix}
+-
+\begin{bmatrix}
+W^{0}_{4} & 0\\
+0 & W^{1}_{4}
+\end{bmatrix}
+\begin{bmatrix}
+X_{4}(0) \\ 
+X_{4}(1) \\ 
+\end{bmatrix}
+\end{equation}
+
+	And on dividing $x_2(n)$ into
+	\begin{align}
+		x_5(n) = \cbrak{x(1), x(5)} \\
+		x_6(n) = \cbrak{x(3), x(7)}
+	\end{align}
+	i.e.,
+	\begin{align}
+		\mymat{X_5(0) \\ X_5(1)} = \vec{F}_2 \mymat{x(1) \\ x(5)} \\
+		\mymat{X_6(0) \\ X_6(1)} = \vec{F}_2 \mymat{x(3) \\ x(7)}
+	\end{align}
+	to get
+	\begin{align}
+		X_2(k) = X_5(k) + W_4^k X_6(k) \\
+		X_2(k + 2) = X_5(k) - W_4^k X_6(k) 
+	\end{align}
+	for $k = 0, 1$
+\begin{equation}
+\begin{bmatrix}
+X_{2}(0) \\ 
+X_{2}(1)\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}
+X_{5}(0) \\ 
+X_{5}(1)\\ 
+\end{bmatrix}
++
+\begin{bmatrix}
+W^{0}_{4} & 0\\
+0 & W^{1}_{4}
+\end{bmatrix}
+\begin{bmatrix}
+X_{6}(0) \\ 
+X_{6}(1) \\ 
+\end{bmatrix}
+\end{equation}
+\begin{equation}
+	\begin{bmatrix}
+	X_{2}(2) \\ 
+	X_{2}(3)\\ 
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+	X_{5}(0) \\ 
+	X_{5}(1)\\ 
+	\end{bmatrix}
+	-
+	\begin{bmatrix}
+	W^{0}_{4} & 0\\
+	0 & W^{1}_{4}
+	\end{bmatrix}
+	\begin{bmatrix}
+	X_{6}(0) \\ 
+	X_{6}(1) \\ 
+	\end{bmatrix}
+	\end{equation}
+		
+\item For 
+    \begin{align}
+	    \vec{x} = \myvec{1\\2\\3\\4\\2\\1}
+        \label{eq:equation1}
+    \end{align}
+    compte the DFT  
+		using 
+	    \eqref{eq:dft-mat-def}\\
+		\solution Download the following Python code that plots Fig. \ref{fig-7.11}.
 	\begin{lstlisting}
-wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/6_6.py
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/7_11.py
 	\end{lstlisting}
 	
 	Run the code by executing
 	\begin{lstlisting}
-python 6_6.py
+		python 7.11.py
+	\end{lstlisting}
+
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=\columnwidth]{./figs/7.11.png}
+		\caption{Plot of the discrete fourier transform of $\vec{x}$ using the DFT matrix}
+		\label{fig-7.11}	
+	\end{figure}
+    \item Repeat the above exercise using the FFT
+	    after zero padding $\vec{x}$.\\
+		\solution Download the following Python code that plots Fig. \ref{fig-7.12}.
+	\begin{lstlisting}
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/7.12.py
 	\end{lstlisting}
 	
-	\begin{figure}[!ht]
+	Run the code by executing
+	\begin{lstlisting}
+		python 7.12.py
+	\end{lstlisting}
 
+	\begin{figure}[!ht]
 		\centering
-		\includegraphics[width=0.8\columnwidth]{./figs/6_6.pdf}
-		\caption{Plot of $y(n)$ by DFT matrix}
-		\label{fig-6.5}	
+		\includegraphics[width=\columnwidth]{./figs/7.12.png}
+		\caption{Plot of the fast fourier transform of $\vec{x}$ after zero padding}
+		\label{fig-7.12}	
+	\end{figure}
+%	    \eqref{eq:fft-mat-def}
+\item Write a C program to compute the 8-point FFT. 
+\solution Download the following C codes that generate the values of $X(k)$ using $8$-point FFT
+	\begin{lstlisting}
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/header.h
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/7.13.c
+	\end{lstlisting}
+	
+	Compile and run the C program by executing the following
+	\begin{lstlisting}
+		cc -lm 7.13.c
+		./a.out
+	\end{lstlisting}
+	
+	Download the following Python code that plots Fig. \ref{fig-7.13} using the data generated by the above C code
+	\begin{lstlisting}
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/7.13.py
+	\end{lstlisting}
+	
+	Run the code by executing
+	\begin{lstlisting}
+		python 7.13.py
+	\end{lstlisting}
+
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=\columnwidth]{./figs/7.13.png}
+		\caption{Plot of $\vec{X}$ by $8$-point FFT}
+		\label{fig-7.13}	
+	\end{figure}
+	\item Compare and determine the running time complexities of FFT/IFFT and convolution graphically
+	
+	\solution Download the following C codes that measure the running times of both the algorithms
+	\begin{lstlisting}
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/header.h
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/7.14.c
+	\end{lstlisting}
+	
+	Compile and run the C program by executing the following
+	\begin{lstlisting}
+		cc -lm 7.14.c
+		./a.out
+	\end{lstlisting}
+	
+	Download the following Python code that plots Fig. \ref{fig-7.14} using the running times generated by the C code and fits them to appropriate functions of the input size
+	\begin{lstlisting}
+		wget https://github.com/gunjitmittal/EE3900/blob/main/Assignment-1/codes/7.14.py
+	\end{lstlisting}
+	
+	Run the code by executing
+	\begin{lstlisting}
+		python 7.14.py
+	\end{lstlisting}
+
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=\columnwidth]{./figs/7.14.png}
+		\caption{Plot of the running times of FFT/IFFT and convolution}
+		\label{fig-7.14}	
 	\end{figure}
 	
-	The plot is exactly the same as that obtained in Fig. \ref{fig:xnyn}
-
+	From the plot, it is evident that the time complexity of FFT/IFFT is $O(n \log n)$ and that of convolution is $O(n^2)$
  \end{enumerate}
- %
+ 
+ 
  \section{Exercises}
  Answer the following questions by looking at the python code in Problem \ref{prob:output}
 	
