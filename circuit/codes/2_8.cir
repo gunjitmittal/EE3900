@@ -9,6 +9,7 @@ C0 vc 0 1u ic=0
 .control
 run
 wrdata 2.8.dat V(vc)
+quit
 .endc
 
 .end
