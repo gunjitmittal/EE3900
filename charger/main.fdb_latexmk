@@ -1,6 +1,6 @@
 # Fdb version 3
-["pdflatex"] 1667745280 "/Users/Shared/d/ls and sp/charger/main.tex" "main.pdf" "main" 1667745281
-  "/Users/Shared/d/ls and sp/charger/main.tex" 1667745280 21513 0d89d8a0ca88f074c86f075abc66c57d ""
+["pdflatex"] 1667968668 "/Users/Shared/d/ls and sp/charger/main.tex" "main.pdf" "main" 1667968670
+  "/Users/Shared/d/ls and sp/charger/main.tex" 1667961445 21493 214b0b5c9e7124fbdd8d74e1a62e57d3 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2022/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1136768653 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -251,10 +251,12 @@
   "figs/3_8.png" 1667453142 16732 32e02dfa5b244af237cd4c1043e28aae ""
   "figs/3_9.png" 1666846856 31595 a32b9b4b8f9c35da484d846342c05fec ""
   "figs/4_3.png" 1667457461 25623 b4bbc62ac961128d9d2f1dc8b53c233b ""
-  "main.aux" 1667745281 5502 8b50fc802437a84ca514ce435c12a1bd "pdflatex"
-  "main.out" 1667745281 562 43eed739d6f151668068f9fe9749ab82 "pdflatex"
-  "main.tex" 1667745280 21513 0d89d8a0ca88f074c86f075abc66c57d ""
-  "main.toc" 1667745281 347 ab0275893e96685a8da4bb325c49e584 "pdflatex"
+  "figs/5_3.png" 1667961218 18957 a3515d0d380cedb62a16896847d48077 ""
+  "figs/5_4.png" 1667968668 19181 3e81cea33e15d6cdea06b6c25d51e1fc ""
+  "main.aux" 1667968670 6027 f6ce425672e0a85c49458cdb4c88c5c4 "pdflatex"
+  "main.out" 1667968670 562 43eed739d6f151668068f9fe9749ab82 "pdflatex"
+  "main.tex" 1667961445 21493 214b0b5c9e7124fbdd8d74e1a62e57d3 ""
+  "main.toc" 1667968670 347 ab0275893e96685a8da4bb325c49e584 "pdflatex"
   (generated)
   "main.aux"
   "main.log"

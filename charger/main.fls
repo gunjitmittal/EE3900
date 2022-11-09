@@ -1331,6 +1331,16 @@ INPUT ./figs/4_3.png
 INPUT figs/4_3.png
 INPUT ./figs/4_3.png
 INPUT ./figs/4_3.png
+INPUT ./figs/5_3.png
+INPUT ./figs/5_3.png
+INPUT figs/5_3.png
+INPUT ./figs/5_3.png
+INPUT ./figs/5_3.png
+INPUT ./figs/5_4.png
+INPUT ./figs/5_4.png
+INPUT figs/5_4.png
+INPUT ./figs/5_4.png
+INPUT ./figs/5_4.png
 INPUT main.aux
 INPUT ./main.out
 INPUT ./main.out
